@@ -5,12 +5,14 @@
 # -- script: data.py : Python script with the main functionality                                                    -- #
 # -- author: EstebanMqz                                                                                             -- #
 # -- license: GNU General Public License v3.0                                                                       -- #
-# -- repository: https://github.com/EstebanMqz/MS_Lab3_Marquez-Delgado-Esteban                                      -- #
+# -- repository:  https://github.com/EstebanMqz/MyST_LAB_3_E3                                                       -- #
 # -- ---------------------------------------------------------------------------------------------------------      -- #
 """
 from os import listdir
 from os.path import isfile, join
 import pandas as pd
+from yahoofinancials import YahooFinancials # Yfinance 
+import functions as fn
 import pandas_datareader as pdr
 from datetime import datetime
 

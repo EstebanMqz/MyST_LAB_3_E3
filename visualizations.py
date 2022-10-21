@@ -5,7 +5,7 @@
 # -- script: visualizations.py : Python script with the main functionality                                          -- #
 # -- author: EstebanMqz                                                                                             -- #
 # -- license: GNU General Public License v3.0                                                                       -- #
-# -- repository: h147-- #
+# -- repository:  https://github.com/EstebanMqz/MyST_LAB_3_E3                                                       -- #
 # -- ---------------------------------------------------------------------------------------------------------      -- #
 """
 
