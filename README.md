@@ -14,10 +14,10 @@ Or you can manually install one by one using the name and version in the file.
 ## Funcionalities
 
 ## Authors
-OCHOA CARDENAS, MARCO ANTONIO 
-CORRALES CAMACHO, CUAUHTEMOC
-VARELA MARTINEZ, JORGE ALEJANDRO
-MARQUEZ DELGADO, ESTEBAN
++ OCHOA CARDENAS, MARCO ANTONIO 
++ CORRALES CAMACHO, CUAUHTEMOC
++ VARELA MARTINEZ, JORGE ALEJANDRO
++ MARQUEZ DELGADO, ESTEBAN
 
 ## License
 **GNU General Public License v3.0** 
@@ -31,8 +31,8 @@ if it was of any help to you, thank you.*
 
 ## Contact
 *For more information about this project or related inquiries please send an e-mail to:*
-if720072@iteso.mx MARCO 
-if720482@iteso.mx CUAUHTEMOC
-if715444@iteso.mx JORGE 
-if700637@iteso.mx ESTEBAN
++ MARCO if720072@iteso.mx  
++ CUAUHTEMOC if720482@iteso.mx 
++ JORGE if715444@iteso.mx  
++ ESTEBAN if700637@iteso.mx 
 
