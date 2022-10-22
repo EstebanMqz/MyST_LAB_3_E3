@@ -42,7 +42,6 @@ def hist_csv(df, title, tickers, weights):
     fig.update_layout( yaxis = dict( tickfont = dict(size=9)), xaxis_title=tickers, yaxis_title=weights)
     fig.show()
 
-hist_csv()
 
 
 def plotly_graph(x, y, x_label, y_label, title):
