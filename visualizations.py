@@ -62,9 +62,13 @@ def plotly_graph(x, y, x_label, y_label, title):
     """
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=y, mode='lines+markers',
-    name=y_label, line=dict(color='black'), marker=dict(symbol=3, color='green')))
+    name=y_label, line=dict(color='black'), marker=dict(symbol=3, color='blue')))
     fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label)
     fig.update_xaxes(showspikes=True)
     fig.update_yaxes(showspikes=True)
 
     return fig.show()
+
+    
+
+    

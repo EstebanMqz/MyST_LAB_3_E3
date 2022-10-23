@@ -10,6 +10,7 @@
 """
 
 from dataclasses import dataclass
+from lib2to3.pgen2.grammar import opmap_raw
 import numpy as np
 import plotly.graph_objects as go #plotly
 import plotly.express as px
@@ -67,10 +68,10 @@ def f_pip_size(param_ins, param_pips):
         return pip_size
 
 
-def f_columnas_tiempos(data,Open,Close):
+def f_columnas_tiempos(param_data,Open,Close):
         """
-        Function that calculates columns Open_pos and Pip_Size for the existing dataframe.
-        Open_Pos: Calculates the difference between open and close time columns.
+        Function that calculates column Open_pos for the existing dataframe.
+        Open_Pos: Calculates the difference between Open and Close time columns.
 
         Parameters
         ----------
@@ -78,16 +79,75 @@ def f_columnas_tiempos(data,Open,Close):
         ej. data.Fecha/Hora for columns in files/Historics.csv
         Close: Column of Close date as datetime64 format. 
         ej. data.Fecha/Hora.1 for columns in files/Historics.csv
-
         -------
         returns: Time elapsed for an Open Position in seconds.
-        
-        Open_Pos: A new column as datetime64 column, that represents the seconds for which the trade was open.
+        + Open_Pos: A new column as datetime64 column, that represents the seconds for which the trade was open.
         """
-        data['Open'] = pd.to_datetime(Open)
-        data['Close'] = pd.to_datetime(Close)
-        data['Open_Pos'] = pd.to_datetime(Close)-pd.to_datetime(Open)
-        data['Open_Pos'] = data['Open_Pos'].dt.total_seconds()
+        param_data['Open'] = pd.to_datetime(Open)
+        param_data['Close'] = pd.to_datetime(Close)
+        param_data['Open_Pos'] = pd.to_datetime(Close)-pd.to_datetime(Open)
+        param_data['Open_Pos'] = param_data['Open_Pos'].dt.total_seconds()
 
-        return data
+        return param_data
+
+
+def f_columnas_pips(param_data, pips):
+        """
+        Function that adds more columns of pip transformations.
+        + Pips: Column where the number of resulting pips for each operation should be, including its sign:
+        - Buy Trade: (closeprice - openprice)*mult.
+        - Sell Trade: (openprice - closeprice)*mult.
+        + pips_acm: The accumulated value of the pips column.
+        + profit_acm: The accumulated value of the profit column.
+
+        Parameters
+        ----------
+        param_data: DataFrame base.
+        pips: General tick size file instruments.csv
+        -------
+        returns: Historic data with Pips, pips_acm, profit_acm new columns.
+        """
+        trades = []
+        for i in range(len(param_data)):
+                trades.append(f_pip_size(param_data.loc[i,'Símbolo'], pips))
+        pips = pd.DataFrame(trades, columns=['Pips'])
+        param_data["Pips"] = np.where(param_data['Tipo'] == "buy", 
+        param_data["Precio.1"] - param_data["Precio"], 
+        param_data["Precio"] - param_data["Precio.1"])
+        param_data['pips_acm'] = param_data["Pips"].cumsum()
+        param_data['Beneficio']=pd.to_numeric(param_data['Beneficio'].replace('-',np.nan)) 
+        param_data['profit_acm'] = param_data["Beneficio"].cumsum()
         
+        return param_data
+
+def f_estadisticas_ba(param_data):
+        """
+        A function whose output is a dictionary, that output dictionary must have 2 keys, 'df_1_table' and 'df_2_ranking':
+        + col: Metrics, col: Value, col: Description
+
+        - Ops totales ~ 83 ~ total_operations
+        - Ganadoras ~ 45 ~ Winner operations
+        - Ganadoras_c ~ 19 ~ Winner buy operations
+        - Ganadoras_v ~ 26 ~ Losing sell operations
+        - Perdedoras ~ 38 ~ Losing operations
+        - Perdedoras_c ~ 19 ~ Losing buy operations
+        - Perdedoras_v ~ 19 ~ Losing sell operations
+        - Median (Profits) ~ 1.09 ~ Median operations profit
+        - Median (Pips) ~ 2.8 ~ Median pips profit
+        - r_efectividad ~ 0.54 ~ Total Winning/Total Trades
+        - r_proporcion ~ 1.18 ~ Total Winners/Total Losers
+        - r_efectividad_c ~ 0.23 ~ Winning Purchases/Total Transactions
+        - r_efectividad_v ~ 0.31 ~ Winning Sales / Total Operations
+
+        Parameters
+        ----------
+        param_data: DataFrame base.
+        -------
+        returns:
+        df_1_tabla: col: Metrics, col: Value, col: Description.
+        df_1_ranking: Effectiveness ratio of operations for each instrument.
+        """
+
+
+        
+        return param_data
