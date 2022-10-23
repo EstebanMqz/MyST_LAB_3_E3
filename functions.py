@@ -12,8 +12,6 @@
 from dataclasses import dataclass
 from lib2to3.pgen2.grammar import opmap_raw
 import numpy as np
-import plotly.graph_objects as go #plotly
-import plotly.express as px
 from data import *
 
 def f_leer_archivo(param_archivo):
@@ -122,32 +120,109 @@ def f_columnas_pips(param_data, pips):
 
 def f_estadisticas_ba(param_data):
         """
-        A function whose output is a dictionary, that output dictionary must have 2 keys, 'df_1_table' and 'df_2_ranking':
-        + col: Metrics, col: Value, col: Description
-
-        - Ops totales ~ 83 ~ total_operations
-        - Ganadoras ~ 45 ~ Winner operations
-        - Ganadoras_c ~ 19 ~ Winner buy operations
-        - Ganadoras_v ~ 26 ~ Losing sell operations
-        - Perdedoras ~ 38 ~ Losing operations
-        - Perdedoras_c ~ 19 ~ Losing buy operations
-        - Perdedoras_v ~ 19 ~ Losing sell operations
-        - Median (Profits) ~ 1.09 ~ Median operations profit
-        - Median (Pips) ~ 2.8 ~ Median pips profit
-        - r_efectividad ~ 0.54 ~ Total Winning/Total Trades
-        - r_proporcion ~ 1.18 ~ Total Winners/Total Losers
-        - r_efectividad_c ~ 0.23 ~ Winning Purchases/Total Transactions
-        - r_efectividad_v ~ 0.31 ~ Winning Sales / Total Operations
+        Function that makes a df of general statistics columns from historic operations.
 
         Parameters
         ----------
         param_data: DataFrame base.
         -------
-        returns:
-        df_1_tabla: col: Metrics, col: Value, col: Description.
-        df_1_ranking: Effectiveness ratio of operations for each instrument.
+        returns: Dataframe with metrics columns calculated.
         """
+        metrics = ["Ops totales","Ganadoras","Ganadoras_c","Ganadoras_v","Perdedoras","Perdedoras_c","Perdedoras_v",
+               "Mediana (Profit)","Mediana (Pips)","r_efectividad","r_proporcion","r_efectividad_c","r_efectividad_v"]
+    
+        description = ["Operaciones totales","Operaciones ganadoras","Operaciones ganadoras de compra",
+               "Operaciones perdedoras de venta","Operaciones perdedoras","Operaciones perdedoras de compra",
+               "Operaciones perdedoras de venta","Mediana de profit de operaciones",
+               "Mediana de pips de operaciones","Ganadoras Totales/Operaciones Totales",
+               "Ganadoras Totales/Perdedoras Totales","Ganadoras Compras/Operaciones Totales",
+               "Ganadoras Ventas/ Operaciones Totales"]
+    
+        valor = np.zeros(13)
+    
+        datos_df1 = {"medidas":metrics,"valor":valor,"description":description}
+        df_1_tabla = pd.DataFrame(datos_df1)
 
-
+        param_data["Ops Totales"] = np.ones(len(param_data["Beneficio"]))
+        param_data["Ops Ganadoras"] = np.zeros(len(param_data["Tipo"]))
+        param_data["Ops Perdedoras"] = np.zeros(len(param_data["Tipo"]))
+        param_data["Ops Ganadoras_C"] = np.zeros(len(param_data["Tipo"]))
+        param_data["Ops Perdedoras_C"] = np.zeros(len(param_data["Tipo"]))
+        param_data["Ops Ganadoras_V"] = np.zeros(len(param_data["Tipo"]))
+        param_data["Ops Perdedoras_V"] = np.zeros(len(param_data["Tipo"]))
+    
+        df_1_tabla.valor[0] = len(param_data.Tipo)
+    
+        for i in range(len(param_data["Beneficio"])):
+            if param_data["Beneficio"][i] > 0:
+                param_data["Ops Ganadoras"][i] = 1
+                param_data["Ops Perdedoras"][i] = 0
+            else:
+                param_data["Ops Ganadoras"][i] = 0
+                param_data["Ops Perdedoras"][i] = 1
+    
+        df_1_tabla.valor[1] = sum(param_data["Ops Ganadoras"])
+        df_1_tabla.valor[4] = sum(param_data["Ops Perdedoras"])
+    
+        for i in range(len(param_data["Beneficio"])):
+            if param_data["Ops Ganadoras"][i] == 1 and param_data["Tipo"][i] == "buy" :
+                param_data["Ops Ganadoras_C"][i] = 1
+            elif param_data["Ops Ganadoras"][i] == 1 and param_data["Tipo"][i] == "sell" :
+                param_data["Ops Ganadoras_V"][i] = 1
+            elif param_data["Ops Perdedoras"][i] == 1 and param_data["Tipo"][i] == "buy" :
+                param_data["Ops Perdedoras_C"][i] = 1
+            elif param_data["Ops Perdedoras"][i] == 1 and param_data["Tipo"][i] == "sell" :
+                param_data["Ops Perdedoras_V"][i] = 1
+            else:
+                param_data["Ops Ganadoras_C"][i] = 0
+                param_data["Ops Ganadoras_V"][i] = 0
+                param_data["Ops Perdedoras_C"][i] = 0
+                param_data["Ops Perdedoras_V"][i] = 0
+            
+        df_1_tabla.valor[2] = sum(param_data["Ops Ganadoras_C"])
+        df_1_tabla.valor[3] = sum(param_data["Ops Ganadoras_V"])
+        df_1_tabla.valor[5] = sum(param_data["Ops Perdedoras_C"])
+        df_1_tabla.valor[6] = sum(param_data["Ops Perdedoras_V"])
         
-        return param_data
+        df_1_tabla.valor[7] = param_data["Beneficio"].median()
+        df_1_tabla.valor[8] = param_data["Pips"].median()
+        
+        df_1_tabla.valor[9] = round(sum(param_data["Ops Ganadoras"])/len(param_data["Ops Perdedoras"]),3)
+        df_1_tabla.valor[10] = round(sum(param_data["Ops Ganadoras"])/sum(param_data["Ops Ganadoras"]),3)
+        df_1_tabla.valor[11] = round(sum(param_data["Ops Ganadoras_C"])/len(param_data["Ops Ganadoras"]),3)
+        df_1_tabla.valor[12] = round(sum(param_data["Ops Ganadoras_V"])/len(param_data["Ops Ganadoras"]),3)
+        
+        return df_1_tabla
+
+def estadisticas_ba2(param_data):
+    for i in range(len(param_data)):
+        if param_data["Beneficio"][i] > 0:
+            param_data["Ops Ganadoras"][i] = 1
+            param_data["Ops Perdedoras"][i] = 0
+        else:
+            param_data["Ops Ganadoras"][i] = 0
+            param_data["Ops Perdedoras"][i] = 1
+
+    for i in range(len(param_data["Beneficio"])):
+        if param_data["Ops Ganadoras"][i] == 1 and param_data["Tipo"][i] == "buy" :
+            param_data["Ops Ganadoras_C"][i] = 1
+        elif param_data["Ops Ganadoras"][i] == 1 and param_data["Tipo"][i] == "sell" :
+            param_data["Ops Ganadoras_V"][i] = 1
+        elif param_data["Ops Perdedoras"][i] == 1 and param_data["Tipo"][i] == "buy" :
+            param_data["Ops Perdedoras_C"][i] = 1
+        elif param_data["Ops Perdedoras"][i] == 1 and param_data["Tipo"][i] == "sell" :
+            param_data["Ops Perdedoras_V"][i] = 1
+        else:
+            param_data["Ops Ganadoras_C"][i] = 0
+            param_data["Ops Ganadoras_V"][i] = 0
+            param_data["Ops Perdedoras_C"][i] = 0
+            param_data["Ops Perdedoras_V"][i] = 0
+            
+    df_2_ranking = pd.pivot_table(param_data,index=["Símbolo"],aggfunc={"Ops Ganadoras":np.sum,"Ops Totales":np.sum})
+    df_2_ranking["rank"] = (df_2_ranking["Ops Ganadoras"]/df_2_ranking["Ops Totales"])
+    df_2_ranking = df_2_ranking.drop(["Ops Ganadoras","Ops Totales"],axis=1)
+    df_2_ranking = df_2_ranking.sort_values('rank',ascending=False)
+    df_2_ranking["rank"] = round(df_2_ranking["rank"],2)
+    df_2_ranking["rank %"] = df_2_ranking["rank"].map(lambda x:format(x,'.2%'))
+    #pivot_ord["rank"] = pivot_ord["rank"].map(lambda x:format(x,'.2%'))
+    return df_2_ranking

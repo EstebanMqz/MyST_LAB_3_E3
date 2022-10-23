@@ -19,3 +19,11 @@ import pandas as pd
 from os import path
 import fire
 
+
+df_1_tabla_c = dt.df_1_tabla_c
+df_1_tabla_m = dt.df_1_tabla_m
+df_1_tabla_e = dt.df_1_tabla_e
+
+df_2_tabla_c = dt.df_2_tabla_c
+df_2_tabla_m = dt.df_2_tabla_m
+df_2_tabla_e = dt.df_2_tabla_e
