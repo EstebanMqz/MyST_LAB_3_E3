@@ -358,3 +358,4 @@ def f_estadisticas_mad(param_d_p,param_data):
         tabla_desempeño["Valor"][6] = DUC_ct
 
         return tabla_desempeño
+

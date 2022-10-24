@@ -30,7 +30,7 @@ if it was of any help to you, thank you.*
 
 ## Contact
 *For more information about this project or related inquiries please send an e-mail to:*
-+ MARCO if720072@iteso.mx  
-+ CUAUHTEMOC if720482@iteso.mx 
-+ JORGE if715444@iteso.mx  
++ CUAUHTEMOC if720482@iteso.mx
 + ESTEBAN if700637@iteso.mx 
++ MARCO if720072@iteso.mx   
++ JORGE if715444@iteso.mx  
